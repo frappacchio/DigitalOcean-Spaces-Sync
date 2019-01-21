@@ -8,9 +8,9 @@ require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPA
 
 class DOS_Filesystem {
 
-  public function get_instance ( $key, $secret, $container, $endpoint ) {
+  public static function get_instance ( $key, $secret, $container, $endpoint ) {
 
-    $client = S3Client::factory([
+    $client = new S3Client([
       'credentials' => [
         'key'    => $key,
         'secret' => $secret,
