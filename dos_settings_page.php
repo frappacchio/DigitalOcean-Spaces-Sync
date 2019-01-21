@@ -163,11 +163,16 @@
           </div>
 
           <div class="col-xs-12 col-sm-12 col-md-12 col-lg-10">
+              <?php
+              $uploadPath = wp_upload_dir();
+              ?>
             <input id="upload_path" name="upload_path" type="text" class="regular-text code"
-                   value="<?php echo esc_attr( defined( 'UPLOAD_PATH' ) ? UPLOAD_PATH : get_option('upload_path')  ); ?>" 
+                   value="<?php echo esc_attr( $uploadPath['basedir'] ?$uploadPath['basedir'] : get_option('upload_path')  ); ?>"
                    <?php echo ( defined( 'UPLOAD_PATH' ) ? 'disabled' : '' ); ?>/>
             <div class="dos__description">
-              <?php _e('Local path to the uploaded files. By default', 'dos'); ?>: <code>wp-content/uploads</code>
+
+              <?php _e('Local path to the uploaded files. By default', 'dos'); ?>: <code>wp-content/uploads</code><br/>
+              <?php _e('Your current path is', 'dos'); ?>: <code><?= $uploadPath['basedir']; ?></code>
               <?php _e('Setting duplicates of the same name from the mediafiles settings. Changing one, you change and other', 'dos'); ?>.
             </div>
           </div>
@@ -187,8 +192,12 @@
                    value="<?php echo esc_attr( defined( 'DOS_STORAGE_PATH' ) ? DOS_STORAGE_PATH : get_option('dos_storage_path')  ); ?>" 
                    <?php echo ( defined( 'DOS_STORAGE_PATH' ) ? 'disabled' : '' ); ?>/>
             <div class="dos__description">
-              <?php _e( 'The path to the file in the storage will appear as a prefix / path.<br />For example, in your case:', 'dos' ); ?>
+
+              <?php _e( 'The path to the file in the storage will appear as a prefix / path.', 'dos' ); ?><br/>
+                <?php if(!empty(get_option('dos_storage_path'))): ?>
+                    <?php _e( 'For example in your case:', 'dos' ); ?>
               <code><?php echo get_option('dos_storage_path'); ?></code>
+                <?php endif; ?>
             </div>
           </div>
 
