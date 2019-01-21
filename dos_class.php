@@ -92,10 +92,21 @@ class DOS
     {
 
         add_filter('wp_update_attachment_metadata', array($this, 'filter_wp_update_attachment_metadata'), 20, 1);
-        // add_filter('wp_save_image_editor_file', array($this,'filter_wp_save_image_editor_file'), 10, 5 );
         add_filter('wp_unique_filename', array($this, 'filter_wp_unique_filename'));
+        if ( ! empty($this->storage_path)) {
+            add_filter('wp_get_attachment_url', array($this, 'filter_wp_get_attachment_url'), 10, 1);
+        }
 
     }
+
+    public function filter_wp_get_attachment_url($url)
+    {
+        $newUrl = str_replace($this->upload_url_path,
+            $this->upload_url_path . DIRECTORY_SEPARATOR . $this->storage_path, $url);
+
+        return $newUrl;
+    }
+
 
     public function register_scripts()
     {
@@ -176,6 +187,7 @@ class DOS
 
                 if (isset($size['file'])) {
 
+
                     $path = $basepath . $size['file'];
                     array_push($paths, $path);
 
@@ -188,8 +200,7 @@ class DOS
         // process paths
         foreach ($paths as $filepath) {
 
-            // upload file
-            $this->file_upload($filepath, 0, true);
+            $this->file_upload($filepath);
 
         }
 
@@ -258,9 +269,8 @@ class DOS
 
                 // set basepath for other sizes
                 $file_info = pathinfo($path);
-                $basepath  = isset($file_info['extension'])
-                    ? str_replace($file_info['filename'] . "." . $file_info['extension'], "", $path)
-                    : $path;
+                $basepath  = isset($file_info['extension']) ? str_replace($file_info['filename'] . "." . $file_info['extension'],
+                    "", $path) : $path;
 
             }
 
@@ -340,6 +350,7 @@ class DOS
         $path = str_replace($this->upload_path, '', $file);
 
         return $this->storage_path . $path;
+        //return $path;
 
     }
 
