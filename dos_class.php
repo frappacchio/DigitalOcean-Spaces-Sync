@@ -66,7 +66,6 @@ class DOS
     // SETUP
     public function setup()
     {
-
         $this->register_actions();
         $this->register_filters();
 
@@ -135,7 +134,6 @@ class DOS
         register_setting('dos_settings', 'dos_storage_file_only');
         register_setting('dos_settings', 'dos_storage_file_delete');
         register_setting('dos_settings', 'dos_filter');
-        // register_setting('dos_settings', 'dos_debug');
         register_setting('dos_settings', 'upload_url_path');
         register_setting('dos_settings', 'upload_path');
 

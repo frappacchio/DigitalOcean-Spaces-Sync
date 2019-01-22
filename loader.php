@@ -12,7 +12,19 @@
 
  */
 
-require dirname(__FILE__) . DIRECTORY_SEPARATOR . 'dos_class.php';
+
+
+
+require_once 'vendor/autoload.php';
+
+define('DOS_PLUGIN_FOLDER',__DIR__);
+define('DOS_PLUGIN_FOLDER_RELATIVE_PATH',dirname(plugin_basename(__FILE__)));
+
+$plugin = new \frappacchio\DOSWordpress\DOSWordpressPlugin();
+
+
+
+/*require dirname(__FILE__) . DIRECTORY_SEPARATOR . 'dos_class.php';
 require dirname(__FILE__) . DIRECTORY_SEPARATOR . 'dos_class_filesystem.php';
 
 load_plugin_textdomain('dos', false, dirname(plugin_basename(__FILE__)) . '/languages');
@@ -57,4 +69,4 @@ if ( is_admin() && ( !defined('DOING_AJAX') || !DOING_AJAX ) ) {
 }
 
 $instance = DOS::get_instance();
-$instance->setup();
+$instance->setup();*/
