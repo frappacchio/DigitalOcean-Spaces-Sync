@@ -19,6 +19,11 @@
       "homepage": "https://github.com/keeross"
     }
   ],
+  "autoload": {
+    "psr-4": {
+      "frappacchio\\": "frappacchio/"
+    }
+  },
   "require": {
     "php": ">=5.3.3",
     "katzgrau/klogger": "dev-master",
