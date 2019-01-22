@@ -18,12 +18,18 @@
 }
 
 .dos__page .dos__block .row {
-  height: 75px;
+  /*height: 75px;*/
   align-items: center;
+  margin-bottom: 20px;
+}
+
+.dos__page .dos__block .row .submit{
+  margin: 0 auto;
+  padding: 0;
 }
 
 .dos__page .dos__block .row.larger {
-  height: 150px;
+  /*height: 150px;*/
 }
 
 .dos__page label {

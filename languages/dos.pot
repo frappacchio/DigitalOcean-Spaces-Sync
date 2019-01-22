@@ -112,6 +112,10 @@ msgstr ""
 msgid "Local path to the uploaded files. By default"
 msgstr ""
 
+#: code/settings_page.php:169
+msgid "Current installation path is"
+msgstr ""
+
 #: code/settings_page.php:170
 msgid ""
 "Setting duplicates of the same name from the mediafiles settings. Changing "

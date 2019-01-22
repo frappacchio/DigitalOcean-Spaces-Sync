@@ -15,7 +15,7 @@
 require dirname(__FILE__) . DIRECTORY_SEPARATOR . 'dos_class.php';
 require dirname(__FILE__) . DIRECTORY_SEPARATOR . 'dos_class_filesystem.php';
 
-load_plugin_textdomain('dos', false, dirname(plugin_basename(__FILE__)) . '/lang');
+load_plugin_textdomain('dos', false, dirname(plugin_basename(__FILE__)) . '/languages');
 
 function dos_incompatibile($msg) {
   require_once ABSPATH . DIRECTORY_SEPARATOR . 'wp-admin' . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'plugin.php';
