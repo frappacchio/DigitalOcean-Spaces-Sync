@@ -4,8 +4,21 @@ namespace frappacchio\DOSWordpress;
 
 use frappacchio\DOSpaces\Space;
 
+/**
+ * Class PluginFiltersAndActions
+ * @package frappacchio\DOSWordpress
+ * @property Space $fileSystem
+ */
 class PluginFiltersAndActions
 {
+    /**
+     * @var Space;
+     */
+    private $fileSystem;
+
+    /**
+     * PluginFiltersAndActions constructor.
+     */
     public function __construct()
     {
         $this->addActions();
@@ -30,19 +43,16 @@ class PluginFiltersAndActions
     }
 
     /**
-     * Returns a space instance (ex. Digitalocean space instance), as file system instance
-     * to use it for others actions
-     * @return Space
+     * Check for image formats in metadata and save all of them
+     * @param $metadata
+     * @return array
      */
-    private function getFileSystem(){
-        return new Space(
-            PluginSettings::get('dos_key'),
-            PluginSettings::get('dos_secret'),
-            PluginSettings::get('dos_container'),
-            PluginSettings::get('dos_endpoint'),
-            PluginSettings::get('dos_storage_path'),
-            PluginSettings::get('dos_filter')
-        );
+    public function filter_wp_update_attachment_metadata($metadata)
+    {
+        foreach ($this->getPaths($metadata) as $filePath) {
+            $this->fileUpload($filePath);
+        }
+        return $metadata;
     }
 
     /**
@@ -53,13 +63,13 @@ class PluginFiltersAndActions
      */
     private function getPaths($metadata)
     {
-        $paths      = [];
+        $paths = [];
         $upload_dir = wp_upload_dir();
         if (isset($metadata['file'])) {
             $path = $upload_dir['basedir'] . DIRECTORY_SEPARATOR . $metadata['file'];
             array_push($paths, $path);
             $file_info = pathinfo($path);
-            $basepath = isset($file_info['extension'])? str_replace($file_info['filename'] . "." . $file_info['extension'], "", $path):$path;
+            $basepath = isset($file_info['extension']) ? str_replace($file_info['filename'] . "." . $file_info['extension'], "", $path) : $path;
         }
         if (isset($metadata['sizes'])) {
             foreach ($metadata['sizes'] as $size) {
@@ -73,17 +83,36 @@ class PluginFiltersAndActions
     }
 
     /**
-     * Check for image formats in metadata and save all of them
-     * @param $metadata
-     * @return array
+     * Upload a file to the space and delete it from local folder if this is setted from
+     * the settings page
+     * @param string $filePath
      */
-    public function filter_wp_update_attachment_metadata($metadata)
+    private function fileUpload($filePath)
     {
-        $fileSystem = $this->getFileSystem();
-        foreach ($this->getPaths($metadata) as $filepath) {
-            $fileSystem->upload($filepath);
+        if (empty($this->fileSystem)) {
+            $this->fileSystem = $this->getFileSystem();
         }
-        return $metadata;
+        $this->fileSystem->upload($filePath);
+        if (PluginSettings::get('dos_storage_file_only')) {
+            unlink($filePath);
+        }
+    }
+
+    /**
+     * Returns a space instance (ex. Digitalocean space instance), as file system instance
+     * to use it for others actions
+     * @return Space
+     */
+    private function getFileSystem()
+    {
+        return new Space(
+            PluginSettings::get('dos_key'),
+            PluginSettings::get('dos_secret'),
+            PluginSettings::get('dos_container'),
+            PluginSettings::get('dos_endpoint'),
+            PluginSettings::get('dos_storage_path'),
+            PluginSettings::get('dos_filter')
+        );
     }
 
     /**
@@ -94,9 +123,7 @@ class PluginFiltersAndActions
     public function action_add_attachment($postID)
     {
         if (wp_attachment_is_image($postID) == false) {
-            $fileSystem = $this->getFileSystem();
-            $file = get_attached_file($postID);
-            return $fileSystem->upload($file);
+            $this->fileUpload(get_attached_file($postID));
         }
         return true;
     }
@@ -108,14 +135,16 @@ class PluginFiltersAndActions
      */
     public function action_delete_attachment($postID)
     {
-        $fileSystem = $this->getFileSystem();
+        if (empty($this->fileSystem)) {
+            $this->fileSystem = $this->getFileSystem();
+        }
         if (wp_attachment_is_image($postID) == false) {
             $file = get_attached_file($postID);
-            return $fileSystem->delete($file);
+            return $this->fileSystem->delete($file);
         } else {
             $metadata = wp_get_attachment_metadata($postID);
             foreach ($this->getPaths($metadata) as $filepath) {
-                if(!$fileSystem->delete($filepath)){
+                if (!$this->fileSystem->delete($filepath)) {
                     return false;
                 }
             }

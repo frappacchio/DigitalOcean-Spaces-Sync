@@ -8,29 +8,62 @@ namespace frappacchio\DOSpaces;
  * @package frappacchio\DOSpaces
  *
  * @property \League\Flysystem\Filesystem $fileSystem
- * @property string                       $key
- * @property string                       $secret
- * @property string                       $endpoint
- * @property string                       $container
- * @property string                       $storagePath
- * @property string                       $storageFileOnly
- * @property string                       $storageFileDelete
- * @property string                       $filter
- * @property string                       $uploadUrlPath
- * @property string                       $uploadPath
- * @property boolean                      $fileVisibility
+ * @property string $key
+ * @property string $secret
+ * @property string $endpoint
+ * @property string $container
+ * @property string $storagePath
+ * @property string $storageFileOnly
+ * @property string $storageFileDelete
+ * @property string $filter
+ * @property string $uploadUrlPath
+ * @property string $uploadPath
+ * @property boolean $fileVisibility
  */
 class Space
 {
+    /**
+     * @var \League\Flysystem\Filesystem
+     */
     public $fileSystem;
+    /**
+     * @var string
+     */
     public $key;
+    /**
+     * @var string
+     */
     public $secret;
+    /**
+     * @var string
+     */
     public $endpoint;
+    /**
+     * @var string
+     */
     public $container;
+    /**
+     * @var string
+     */
     public $storagePath;
+    /**
+     * @var string
+     */
     public $filter;
+    /**
+     * @var string
+     */
     public $fileVisibility = 'public';
 
+    /**
+     * Space constructor.
+     * @param string $key
+     * @param string $secret
+     * @param string $container
+     * @param string $endpoint
+     * @param string $storagePath
+     * @param string $filter
+     */
     public function __construct(
         $key,
         $secret,
@@ -38,14 +71,15 @@ class Space
         $endpoint,
         $storagePath,
         $filter
-    ) {
-        $this->key               = $key;
-        $this->secret            = $secret;
-        $this->endpoint          = $endpoint;
-        $this->container         = $container;
-        $this->storagePath       = $storagePath;
-        $this->filter            = $filter;
-        $this->fileSystem = FileSystem::getInstance($this->key,$this->secret,$this->container,$this->endpoint);
+    )
+    {
+        $this->key = $key;
+        $this->secret = $secret;
+        $this->endpoint = $endpoint;
+        $this->container = $container;
+        $this->storagePath = $storagePath;
+        $this->filter = $filter;
+        $this->fileSystem = FileSystem::getInstance($this->key, $this->secret, $this->container, $this->endpoint);
     }
 
     /**
@@ -54,7 +88,7 @@ class Space
      */
     public function upload($fileName)
     {
-        if (!empty($fileName) && !empty($this->filter) && $this->filter !== '*' && ! preg_match($this->filter, $fileName)) {
+        if (!empty($fileName) && !empty($this->filter) && $this->filter !== '*' && !preg_match($this->filter, $fileName)) {
             return $this->fileSystem->put($fileName, file_get_contents($fileName), [
                 'visibility' => $this->fileVisibility
             ]);
@@ -63,11 +97,18 @@ class Space
         }
     }
 
+    /**
+     * @param $file
+     */
     public function exists($file)
     {
 
     }
 
+    /**
+     * @param $file
+     * @return bool
+     */
     public function delete($file)
     {
         try {
@@ -77,15 +118,19 @@ class Space
         }
     }
 
+    /**
+     * @param $name
+     * @return bool|\League\Flysystem\Filesystem|null
+     */
     public function __get($name)
     {
-        if ($name === 'fileSystem' && empty($this->fileSystem) && ! empty($this->key) && ! empty($this->container) && ! empty($this->endpoint)) {
+        if ($name === 'fileSystem' && empty($this->fileSystem) && !empty($this->key) && !empty($this->container) && !empty($this->endpoint)) {
             return $this->fileSystem = FileSystem::getInstance($this->key, $this->secret, $this->container,
                 $this->endpoint);
         } elseif ($name === 'fileSystem') {
             return false;
         }
 
-        return ! empty($this->$name) ? $this->$name : null;
+        return !empty($this->$name) ? $this->$name : null;
     }
 }

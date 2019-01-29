@@ -16,10 +16,10 @@ use League\Flysystem\Filesystem as FS;
 class FileSystem
 {
     /**
-     * @param string $key       container key
-     * @param string $secret    container secret
+     * @param string $key container key
+     * @param string $secret container secret
      * @param string $container container name
-     * @param string $endpoint  container endpoint (including scheme)
+     * @param string $endpoint container endpoint (including scheme)
      *
      * @return FS
      */
@@ -27,13 +27,13 @@ class FileSystem
     {
         $client = new S3Client([
             'credentials' => [
-                'key'    => $key,
+                'key' => $key,
                 'secret' => $secret,
             ],
-            'bucket'      => 'do-spaces',
-            'endpoint'    => $endpoint,
-            'version'     => 'latest',
-            'region'      => 'us-east-1',
+            'bucket' => 'do-spaces',
+            'endpoint' => $endpoint,
+            'version' => 'latest',
+            'region' => 'us-east-1',
         ]);
 
         $connection = new AwsS3Adapter($client, $container);

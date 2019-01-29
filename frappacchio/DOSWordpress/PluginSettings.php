@@ -3,8 +3,18 @@
 namespace frappacchio\DOSWordpress;
 
 
+/**
+ * Class PluginSettings
+ * @package frappacchio\DOSWordpress
+ */
 class PluginSettings
 {
+    /**
+     * return the plugin option from defined constant or
+     * wordpress setting saved in the database
+     * @param string $property
+     * @return string|boolean
+     */
     public static function get($property)
     {
         if (defined(strtoupper($property))) {
@@ -14,11 +24,20 @@ class PluginSettings
         return get_option($property, false);
     }
 
+    /**
+     * Save an option value to the database
+     * @param string $property
+     * @param mixed $value
+     * @return bool
+     */
     public static function set($property, $value)
     {
         return add_option($property, $value);
     }
 
+    /**
+     * Register a setting and its data required for this plugin to work
+     */
     public static function registerSettings()
     {
         register_setting('dos_settings', 'dos_key');
