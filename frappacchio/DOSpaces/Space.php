@@ -28,13 +28,8 @@ class Space
     public $endpoint;
     public $container;
     public $storagePath;
-//    public $storageFileOnly;
-//    public $storageFileDelete;
     public $filter;
-//    public $uploadUrlPath;
-//    public $uploadPath;
     public $fileVisibility = 'public';
-
 
     public function __construct(
         $key,
@@ -42,28 +37,25 @@ class Space
         $container,
         $endpoint,
         $storagePath,
-//        $storageFileOnly,
-//        $storageFileDelete,
         $filter
-//        $uploadUrlPath,
-//        $uploadPath
     ) {
         $this->key               = $key;
         $this->secret            = $secret;
         $this->endpoint          = $endpoint;
         $this->container         = $container;
         $this->storagePath       = $storagePath;
-//        $this->storageFileOnly   = $storageFileOnly;
-//        $this->storageFileDelete = $storageFileDelete;
         $this->filter            = $filter;
-//        $this->uploadUrlPath     = $uploadUrlPath;
-//        $this->uploadPath        = $uploadPath;
+        $this->fileSystem = FileSystem::getInstance($this->key,$this->secret,$this->container,$this->endpoint);
     }
 
-    public function upload($file)
+    /**
+     * @param string $fileName
+     * @return bool
+     */
+    public function upload($fileName)
     {
-        if ( ! empty($this->filter) && $this->filter !== '*' && ! preg_match($this->filter, $file)) {
-            return $this->fileSystem->put($file, file_get_contents($file), [
+        if (!empty($fileName) && !empty($this->filter) && $this->filter !== '*' && ! preg_match($this->filter, $fileName)) {
+            return $this->fileSystem->put($fileName, file_get_contents($fileName), [
                 'visibility' => $this->fileVisibility
             ]);
         } else {

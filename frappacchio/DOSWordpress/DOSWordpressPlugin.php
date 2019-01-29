@@ -9,11 +9,13 @@ class DOSWordpressPlugin
     public const PLUGIN_VERSION = '';
     public const PLUGIN_CAPABILITIES = 'manage_options';
     public const PLUGIN_PAGE = 'dos-settings-page.php';
+    private $pluginInstance;
     public function __construct()
     {
         load_plugin_textdomain('dos', false, DOS_PLUGIN_FOLDER_RELATIVE_PATH.DIRECTORY_SEPARATOR . 'languages');
         add_action('admin_init', '\frappacchio\DOSWordpress\PluginSettings::registerSettings');
         add_action('admin_menu', [$this, 'setOptionPage']);
+        $this->pluginInstance = new PluginFiltersAndActions();
     }
 
     public function registerSettingsPage()
