@@ -162,20 +162,23 @@ class PluginFiltersAndActions
      */
     public function action_delete_attachment($postID)
     {
-        if (empty($this->fileSystem)) {
-            $this->fileSystem = $this->getFileSystem();
-        }
-        if (wp_attachment_is_image($postID) == false) {
-            $file = get_attached_file($postID);
-            return $this->fileSystem->delete($file);
-        } else {
-            $metadata = wp_get_attachment_metadata($postID);
-            foreach ($this->getPaths($metadata) as $filepath) {
-                if (!$this->fileSystem->delete($filepath)) {
-                    return false;
-                }
+        if(PluginSettings::get('dos_storage_file_delete')){
+            if (empty($this->fileSystem)) {
+                $this->fileSystem = $this->getFileSystem();
             }
-            return true;
+            if (wp_attachment_is_image($postID) == false) {
+                $filePath = get_attached_file($postID);
+                return $this->fileSystem->delete($this->cleanFilePath($filePath));
+            } else {
+                $metadata = wp_get_attachment_metadata($postID);
+                foreach ($this->getPaths($metadata) as $filepath) {
+                    if (!$this->fileSystem->delete($this->cleanFilePath($filepath))) {
+                        return false;
+                    }
+                }
+                return true;
+            }
         }
+
     }
 }
