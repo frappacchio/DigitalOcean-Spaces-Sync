@@ -105,9 +105,10 @@ class PluginFiltersAndActions
             $this->fileSystem = $this->getFileSystem();
         }
         $this->optimizeImage($filePath);
-        $this->fileSystem->upload($filePath,$this->cleanFilePath($filePath));
-        if (PluginSettings::get('dos_storage_file_only')) {
-            unlink($filePath);
+        if($this->fileSystem->upload($filePath,$this->cleanFilePath($filePath))){
+            if (PluginSettings::get('dos_storage_file_only')) {
+                unlink($filePath);
+            }
         }
     }
 
