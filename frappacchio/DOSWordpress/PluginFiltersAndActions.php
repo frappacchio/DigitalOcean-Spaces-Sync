@@ -34,6 +34,7 @@ class PluginFiltersAndActions
     {
         add_action('add_attachment', [$this, 'action_add_attachment'], 20, 1);
         add_action('delete_attachment', [$this, 'action_delete_attachment'], 20, 1);
+        add_action('admin_enqueue_scripts', [$this, 'registerAssets']);
     }
 
     /**
@@ -42,6 +43,14 @@ class PluginFiltersAndActions
     public function addFilters()
     {
         add_filter('wp_update_attachment_metadata', [$this, 'filter_wp_update_attachment_metadata'], 20, 1);
+    }
+
+    public function registerAssets($hook)
+    {
+        if($hook === 'settings_page_dos-settings-page')
+        {
+            wp_enqueue_script('dos-script-js',DOS_PLUGIN_URL . DIRECTORY_SEPARATOR . 'assets/scripts/core.js', array('jquery'));
+        }
     }
 
     /**
@@ -85,21 +94,6 @@ class PluginFiltersAndActions
     }
 
     /**
-     * Returns the correct file path removing the local path
-     * or adding a prefix folder if it's defined
-     * @param $filePath
-     * @return string
-     */
-    private function cleanFilePath($filePath)
-    {
-        $basePath = str_replace(PluginSettings::get('upload_path'),'',$filePath);
-        if(PluginSettings::get('dos_storage_path')){
-            $basePath = PluginSettings::get('dos_storage_path').DIRECTORY_SEPARATOR.$basePath;
-        }
-        return $basePath;
-    }
-
-    /**
      * Upload a file to the space and delete it from local folder if this is setted from
      * the settings page
      * @param string $filePath
@@ -110,23 +104,10 @@ class PluginFiltersAndActions
             $this->fileSystem = $this->getFileSystem();
         }
         $this->optimizeImage($filePath);
-        if($this->fileSystem->upload($filePath,$this->cleanFilePath($filePath))){
+        if ($this->fileSystem->upload($filePath, $this->cleanFilePath($filePath))) {
             if (PluginSettings::get('dos_storage_file_only')) {
                 unlink($filePath);
             }
-        }
-    }
-
-    /**
-     * Optimize images throug Image optimizer
-     * The image will be replaced with the optmized one
-     * @see https://github.com/spatie/image-optimizer
-     * @param string $filePath
-     */
-    private function optimizeImage($filePath){
-        if(PluginSettings::get('dos_optimize_images') && preg_match('/.*\.(jpg|jpeg|gif|svg|png)/',$filePath)){
-            $optimizerChain = OptimizerChainFactory::create();
-            $optimizerChain->optimize($filePath);
         }
     }
 
@@ -145,6 +126,35 @@ class PluginFiltersAndActions
             PluginSettings::get('dos_storage_path'),
             PluginSettings::get('dos_filter')
         );
+    }
+
+    /**
+     * Optimize images throug Image optimizer
+     * The image will be replaced with the optmized one
+     * @see https://github.com/spatie/image-optimizer
+     * @param string $filePath
+     */
+    private function optimizeImage($filePath)
+    {
+        if (PluginSettings::get('dos_optimize_images') && preg_match('/.*\.(jpg|jpeg|gif|svg|png)/', $filePath)) {
+            $optimizerChain = OptimizerChainFactory::create();
+            $optimizerChain->optimize($filePath);
+        }
+    }
+
+    /**
+     * Returns the correct file path removing the local path
+     * or adding a prefix folder if it's defined
+     * @param $filePath
+     * @return string
+     */
+    private function cleanFilePath($filePath)
+    {
+        $basePath = str_replace(PluginSettings::get('upload_path'), '', $filePath);
+        if (PluginSettings::get('dos_storage_path')) {
+            $basePath = PluginSettings::get('dos_storage_path') . DIRECTORY_SEPARATOR . $basePath;
+        }
+        return $basePath;
     }
 
     /**
@@ -167,7 +177,7 @@ class PluginFiltersAndActions
      */
     public function action_delete_attachment($postID)
     {
-        if(PluginSettings::get('dos_storage_file_delete')){
+        if (PluginSettings::get('dos_storage_file_delete')) {
             if (empty($this->fileSystem)) {
                 $this->fileSystem = $this->getFileSystem();
             }

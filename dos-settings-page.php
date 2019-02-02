@@ -43,10 +43,10 @@
             </tr>
             </tbody>
         </table>
-        <input type="button" name="test" class="button dos__test__connection" value="<?= __('Check the connection', 'dos'); ?>" />
+        <button type="button" name="dos_test" class="button "><?= __('Check the connection', 'dos'); ?></button>
         <p class="description"><?= __('Save settings before test', 'dos'); ?></p>
         <br/>
-        <?php submit_button(__('Save settings','dos'),'primary','submit',false); ?>
+        <button type="submit" class="button button-primary"><?= __('Save settings','dos'); ?></button>
         <h2><?= __('File & Path settings', 'dos'); ?></h2>
 
 
@@ -161,7 +161,7 @@
             </tbody>
         </table>
         <input type="hidden" name="action" value="update"/>
-        <?php submit_button(__('Save settings','dos'),'primary','submit',false); ?>
+        <button type="submit" class="button button-primary"><?= __('Save settings','dos'); ?></button>
 
         <h2><?= __('Optimization settings', 'dos'); ?></h2>
 
@@ -179,6 +179,6 @@
             </tbody>
         </table>
         <input type="hidden" name="action" value="update"/>
-        <?php submit_button(__('Save settings','dos'),'primary','submit',false); ?>
+        <button type="submit" class="button button-primary"><?= __('Save settings','dos'); ?></button>
     </form>
 </div>
