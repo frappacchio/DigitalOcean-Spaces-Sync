@@ -3,6 +3,8 @@
 namespace frappacchio\DOSWordpress;
 
 use frappacchio\DOSpaces\Space;
+use Spatie\ImageOptimizer\OptimizerChainFactory;
+
 
 /**
  * Class PluginFiltersAndActions
@@ -82,7 +84,12 @@ class PluginFiltersAndActions
         return $paths;
     }
 
-    private function uploadFilePath($filePath)
+    /**
+     * Returns the correct file path removing the local path
+     * @param $filePath
+     * @return string
+     */
+    private function cleanFilePath($filePath)
     {
         return str_replace(PluginSettings::get('upload_path'),'',$filePath);
     }
@@ -97,9 +104,23 @@ class PluginFiltersAndActions
         if (empty($this->fileSystem)) {
             $this->fileSystem = $this->getFileSystem();
         }
-        $this->fileSystem->upload($filePath,$this->uploadFilePath($filePath));
+        $this->optimizeImage($filePath);
+        $this->fileSystem->upload($filePath,$this->cleanFilePath($filePath));
         if (PluginSettings::get('dos_storage_file_only')) {
             unlink($filePath);
+        }
+    }
+
+    /**
+     * Optimize images throug Image optimizer
+     * The image will be replaced with the optmized one
+     * @see https://github.com/spatie/image-optimizer
+     * @param string $filePath
+     */
+    private function optimizeImage($filePath){
+        if(PluginSettings::get('dos_optimize_images') && preg_match('/.*\.(jpg|jpeg|gif|svg|png)/',$filePath)){
+            $optimizerChain = OptimizerChainFactory::create();
+            $optimizerChain->optimize($filePath);
         }
     }
 

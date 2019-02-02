@@ -50,5 +50,6 @@ class PluginSettings
         register_setting('dos_settings', 'dos_filter');
         register_setting('dos_settings', 'upload_url_path');
         register_setting('dos_settings', 'upload_path');
+        register_setting('dos_settings', 'dos_optimize_images');
     }
 }

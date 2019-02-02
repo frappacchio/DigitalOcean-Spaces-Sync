@@ -162,5 +162,23 @@
         </table>
         <input type="hidden" name="action" value="update"/>
         <?php submit_button(__('Save settings','dos'),'primary','submit',false); ?>
+
+        <h2><?= __('Optimization settings', 'dos'); ?></h2>
+
+        <table class="form-table">
+            <tbody>
+            <tr>
+                <td>
+                    <label>
+                        <input type="checkbox" name="dos_optimize_images" value="1" <?= checked( defined( 'DOS_OPTIMIZE_IMAGES' ) ? DOS_OPTIMIZE_IMAGES : get_option('DOS_OPTIMIZE_IMAGES'), 1 ); ?>" <?= ( defined( 'DOS_OPTIMIZE_IMAGES' ) ? 'disabled' : '' ); ?> />
+                        <?= __('Optimize images before upload.', 'dos'); ?>
+                        <?= __('The images are optimized with <a href="https://github.com/spatie/image-optimizer" target="_blank">https://github.com/spatie/image-optimizer</a> library', 'dos'); ?>
+                    </label>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <input type="hidden" name="action" value="update"/>
+        <?php submit_button(__('Save settings','dos'),'primary','submit',false); ?>
     </form>
 </div>
