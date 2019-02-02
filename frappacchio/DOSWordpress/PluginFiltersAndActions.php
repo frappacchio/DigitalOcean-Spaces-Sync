@@ -86,12 +86,17 @@ class PluginFiltersAndActions
 
     /**
      * Returns the correct file path removing the local path
+     * or adding a prefix folder if it's defined
      * @param $filePath
      * @return string
      */
     private function cleanFilePath($filePath)
     {
-        return str_replace(PluginSettings::get('upload_path'),'',$filePath);
+        $basePath = str_replace(PluginSettings::get('upload_path'),'',$filePath);
+        if(PluginSettings::get('dos_storage_path')){
+            $basePath = PluginSettings::get('dos_storage_path').DIRECTORY_SEPARATOR.$basePath;
+        }
+        return $basePath;
     }
 
     /**
