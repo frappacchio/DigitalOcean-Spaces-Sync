@@ -86,10 +86,16 @@ class Space
      * @param string $fileName
      * @return bool
      */
-    public function upload($fileName)
+    public function upload($fileUpload, $fileName = '')
     {
-        if (!empty($fileName) && !empty($this->filter) && $this->filter !== '*' && !preg_match($this->filter, $fileName)) {
-            return $this->fileSystem->put($fileName, file_get_contents($fileName), [
+        if(empty($fileName)){
+            $fileName = $fileUpload;
+        }
+        if (!empty($fileName)) {
+            if(!empty($this->filter) && ($this->filter !== '*' && !preg_match($this->filter, $fileName))){
+                return false;
+            }
+            return $this->fileSystem->put($fileName, file_get_contents($fileUpload), [
                 'visibility' => $this->fileVisibility
             ]);
         } else {

@@ -30,8 +30,8 @@ class PluginFiltersAndActions
      */
     public function addActions()
     {
-        add_action('add_attachment', [$this, 'action_add_attachment'], 10, 1);
-        add_action('delete_attachment', [$this, 'action_delete_attachment'], 10, 1);
+        add_action('add_attachment', [$this, 'action_add_attachment'], 20, 1);
+        add_action('delete_attachment', [$this, 'action_delete_attachment'], 20, 1);
     }
 
     /**
@@ -82,6 +82,11 @@ class PluginFiltersAndActions
         return $paths;
     }
 
+    private function uploadFilePath($filePath)
+    {
+        return str_replace(PluginSettings::get('upload_path'),'',$filePath);
+    }
+
     /**
      * Upload a file to the space and delete it from local folder if this is setted from
      * the settings page
@@ -92,7 +97,7 @@ class PluginFiltersAndActions
         if (empty($this->fileSystem)) {
             $this->fileSystem = $this->getFileSystem();
         }
-        $this->fileSystem->upload($filePath);
+        $this->fileSystem->upload($filePath,$this->uploadFilePath($filePath));
         if (PluginSettings::get('dos_storage_file_only')) {
             unlink($filePath);
         }
