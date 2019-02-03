@@ -74,7 +74,11 @@ class PluginFiltersAndActions
         if ($hook === 'settings_page_dos-settings-page') {
             wp_enqueue_script('dos-script-js', DOS_PLUGIN_URL . DIRECTORY_SEPARATOR . 'assets/scripts/core.js', array('jquery'));
             wp_localize_script('dos-script-js', 'DOSUtils', array(
-                'url'      => admin_url('admin-ajax.php')
+                'url' => admin_url('admin-ajax.php'),
+                'response' => [
+                    'true' => __('Connection established successfully', 'dos'),
+                    'false' => __('There was a problem during connection test', 'dos')
+                ]
             ));
         }
     }
