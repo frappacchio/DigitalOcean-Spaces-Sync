@@ -2,6 +2,7 @@
 
 namespace frappacchio\DOSWordpress;
 
+use frappacchio\DOSpaces\Filesystem;
 use frappacchio\DOSpaces\Space;
 use Spatie\ImageOptimizer\OptimizerChainFactory;
 
@@ -9,7 +10,7 @@ use Spatie\ImageOptimizer\OptimizerChainFactory;
 /**
  * Class PluginFiltersAndActions
  * @package frappacchio\DOSWordpress
- * @property Space $fileSystem
+ * @property Filesystem $fileSystem
  */
 class PluginFiltersAndActions
 {
@@ -45,11 +46,28 @@ class PluginFiltersAndActions
         add_filter('wp_update_attachment_metadata', [$this, 'filter_wp_update_attachment_metadata'], 20, 1);
     }
 
+    /**
+     * Register static assets
+     * @param string $hook
+     */
     public function registerAssets($hook)
     {
         if($hook === 'settings_page_dos-settings-page')
         {
             wp_enqueue_script('dos-script-js',DOS_PLUGIN_URL . DIRECTORY_SEPARATOR . 'assets/scripts/core.js', array('jquery'));
+        }
+    }
+
+    public function testConnection()
+    {
+        try{
+            if (empty($this->fileSystem)) {
+                $this->fileSystem = $this->getFileSystem();
+            }
+            $this->fileSystem->write('test.txt', 'test');
+            return $this->fileSystem->delete('test.txt');
+        }catch (\Exception $e){
+            exit();
         }
     }
 
@@ -114,11 +132,11 @@ class PluginFiltersAndActions
     /**
      * Returns a space instance (ex. Digitalocean space instance), as file system instance
      * to use it for others actions
-     * @return Space
+     * @return Filesystem
      */
     private function getFileSystem()
     {
-        return new Space(
+        return new Filesystem(
             PluginSettings::get('dos_key'),
             PluginSettings::get('dos_secret'),
             PluginSettings::get('dos_container'),
