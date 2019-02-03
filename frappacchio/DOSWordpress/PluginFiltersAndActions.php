@@ -26,6 +26,7 @@ class PluginFiltersAndActions
     {
         $this->addActions();
         $this->addFilters();
+        $this->fileSystem = $this->getFileSystem();
     }
 
     /**
@@ -36,6 +37,7 @@ class PluginFiltersAndActions
         add_action('add_attachment', [$this, 'action_add_attachment'], 20, 1);
         add_action('delete_attachment', [$this, 'action_delete_attachment'], 20, 1);
         add_action('admin_enqueue_scripts', [$this, 'registerAssets']);
+        add_action('wp_ajax_dos_test_connection', [$this, 'testConnection']);
     }
 
     /**
@@ -47,28 +49,43 @@ class PluginFiltersAndActions
     }
 
     /**
+     * Returns a space instance (ex. Digitalocean space instance), as file system instance
+     * to use it for others actions
+     * @return Filesystem
+     */
+    private function getFileSystem()
+    {
+        return new Filesystem(
+            PluginSettings::get('dos_key'),
+            PluginSettings::get('dos_secret'),
+            PluginSettings::get('dos_container'),
+            PluginSettings::get('dos_endpoint'),
+            PluginSettings::get('dos_storage_path'),
+            PluginSettings::get('dos_filter')
+        );
+    }
+
+    /**
      * Register static assets
      * @param string $hook
      */
     public function registerAssets($hook)
     {
-        if($hook === 'settings_page_dos-settings-page')
-        {
-            wp_enqueue_script('dos-script-js',DOS_PLUGIN_URL . DIRECTORY_SEPARATOR . 'assets/scripts/core.js', array('jquery'));
+        if ($hook === 'settings_page_dos-settings-page') {
+            wp_enqueue_script('dos-script-js', DOS_PLUGIN_URL . DIRECTORY_SEPARATOR . 'assets/scripts/core.js', array('jquery'));
+            wp_localize_script('dos-script-js', 'DOSUtils', array(
+                'url'      => admin_url('admin-ajax.php')
+            ));
         }
     }
 
+    /**
+     * Check if the environment connection is available
+     * @return bool
+     */
     public function testConnection()
     {
-        try{
-            if (empty($this->fileSystem)) {
-                $this->fileSystem = $this->getFileSystem();
-            }
-            $this->fileSystem->write('test.txt', 'test');
-            return $this->fileSystem->delete('test.txt');
-        }catch (\Exception $e){
-            exit();
-        }
+        return wp_send_json(['success' => $this->fileSystem->testConnection()]);
     }
 
     /**
@@ -118,32 +135,12 @@ class PluginFiltersAndActions
      */
     private function fileUpload($filePath)
     {
-        if (empty($this->fileSystem)) {
-            $this->fileSystem = $this->getFileSystem();
-        }
         $this->optimizeImage($filePath);
         if ($this->fileSystem->upload($filePath, $this->cleanFilePath($filePath))) {
             if (PluginSettings::get('dos_storage_file_only')) {
                 unlink($filePath);
             }
         }
-    }
-
-    /**
-     * Returns a space instance (ex. Digitalocean space instance), as file system instance
-     * to use it for others actions
-     * @return Filesystem
-     */
-    private function getFileSystem()
-    {
-        return new Filesystem(
-            PluginSettings::get('dos_key'),
-            PluginSettings::get('dos_secret'),
-            PluginSettings::get('dos_container'),
-            PluginSettings::get('dos_endpoint'),
-            PluginSettings::get('dos_storage_path'),
-            PluginSettings::get('dos_filter')
-        );
     }
 
     /**
@@ -196,9 +193,6 @@ class PluginFiltersAndActions
     public function action_delete_attachment($postID)
     {
         if (PluginSettings::get('dos_storage_file_delete')) {
-            if (empty($this->fileSystem)) {
-                $this->fileSystem = $this->getFileSystem();
-            }
             if (wp_attachment_is_image($postID) == false) {
                 $filePath = get_attached_file($postID);
                 return $this->fileSystem->delete($this->cleanFilePath($filePath));

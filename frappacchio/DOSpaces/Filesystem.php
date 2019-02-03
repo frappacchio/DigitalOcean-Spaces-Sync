@@ -7,7 +7,7 @@ namespace frappacchio\DOSpaces;
  *
  * @package frappacchio\DOSpaces
  *
- * @property Space $fileSystem
+ * @property \League\Flysystem\Filesystem $fileSystem
  * @property string $key
  * @property string $secret
  * @property string $endpoint
@@ -112,22 +112,6 @@ class Filesystem
     }
 
     /**
-     * Write a brand new file on space file system
-     * @param string $path
-     * @param string $contents
-     * @param array $config
-     * @return bool
-     */
-    public function write($path, $contents, array $config = [])
-    {
-        try{
-            return $this->fileSystem->write($path,$contents,$config);
-        }catch (\Exception $e){
-            return false;
-        }
-    }
-
-    /**
      * @param $file
      * @return bool
      */
@@ -141,13 +125,26 @@ class Filesystem
     }
 
     /**
+     * @return bool
+     */
+    public function testConnection()
+    {
+        try{
+            $this->fileSystem->write('test.txt', 'test');
+            return $this->fileSystem->delete('test.txt');
+        }catch (\Exception $e){
+            return false;
+        }
+    }
+
+    /**
      * @param $name
      * @return bool|\League\Flysystem\Filesystem|null
      */
     public function __get($name)
     {
         if ($name === 'fileSystem' && empty($this->fileSystem) && !empty($this->key) && !empty($this->container) && !empty($this->endpoint)) {
-            return $this->fileSystem = FileSystem::getInstance($this->key, $this->secret, $this->container,
+            return $this->fileSystem = Space::getInstance($this->key, $this->secret, $this->container,
                 $this->endpoint);
         } elseif ($name === 'fileSystem') {
             return false;
