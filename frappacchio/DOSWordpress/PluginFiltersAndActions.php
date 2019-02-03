@@ -24,9 +24,12 @@ class PluginFiltersAndActions
      */
     public function __construct()
     {
-        $this->addActions();
-        $this->addFilters();
-        $this->fileSystem = $this->getFileSystem();
+
+        if(PluginSettings::get('dos_key') && PluginSettings::get('dos_secret') && PluginSettings::get('dos_endpoint')){
+            $this->addActions();
+            $this->addFilters();
+            $this->fileSystem = $this->getFileSystem();
+        }
     }
 
     /**
