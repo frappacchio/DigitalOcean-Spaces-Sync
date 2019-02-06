@@ -13,19 +13,19 @@ class DOSWordpressPlugin
     /**
      *
      */
-    public const PLUGIN_NAME = 'DigitalOcean Spaces Sync';
+    const PLUGIN_NAME = 'DigitalOcean Spaces Sync';
     /**
      *
      */
-    public const PLUGIN_VERSION = '1.0.0';
+    const PLUGIN_VERSION = '1.0.0';
     /**
      *
      */
-    public const PLUGIN_CAPABILITIES = 'manage_options';
+    const PLUGIN_CAPABILITIES = 'manage_options';
     /**
      *
      */
-    public const PLUGIN_PAGE = 'dos-settings-page.php';
+    const PLUGIN_PAGE = 'dos-settings-page.php';
     /**
      * @var PluginFiltersAndActions
      */
