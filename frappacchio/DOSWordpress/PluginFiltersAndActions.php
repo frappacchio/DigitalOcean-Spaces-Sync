@@ -142,12 +142,15 @@ class PluginFiltersAndActions
      */
     private function fileUpload($filePath)
     {
-        $this->optimizeImage($filePath);
-        if ($this->fileSystem->upload($filePath, $this->cleanFilePath($filePath))) {
-            if (PluginSettings::get('dos_storage_file_only')) {
-                unlink($filePath);
+        if(file_exists($filePath)){
+            $this->optimizeImage($filePath);
+            if ($this->fileSystem->upload($filePath, $this->cleanFilePath($filePath))) {
+                if (PluginSettings::get('dos_storage_file_only')) {
+                    unlink($filePath);
+                }
             }
         }
+        
     }
 
     /**
