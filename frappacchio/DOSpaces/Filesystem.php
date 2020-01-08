@@ -71,8 +71,7 @@ class Filesystem
         $endpoint,
         $storagePath,
         $filter
-    )
-    {
+    ) {
         $this->key = $key;
         $this->secret = $secret;
         $this->endpoint = $endpoint;
@@ -88,16 +87,17 @@ class Filesystem
      */
     public function upload($fileUpload, $fileName = '')
     {
-        if(empty($fileName)){
+        if (empty($fileName)) {
             $fileName = $fileUpload;
         }
         if (!empty($fileName)) {
-            if(!empty($this->filter) && ($this->filter !== '*' && !preg_match($this->filter, $fileName))){
+            if (!empty($this->filter) && ($this->filter !== '*' && !preg_match($this->filter, $fileName))) {
                 return false;
             }
-            return $this->fileSystem->put($fileName, file_get_contents($fileUpload), [
-                'visibility' => $this->fileVisibility
+            $uploadResult = $this->fileSystem->put($fileName, file_get_contents($fileUpload), [
+                'visibility' => $this->fileVisibility,
             ]);
+            return $uploadResult;
         } else {
             return false;
         }
@@ -129,10 +129,10 @@ class Filesystem
      */
     public function testConnection()
     {
-        try{
+        try {
             $this->fileSystem->write('test.txt', 'test');
             return $this->fileSystem->delete('test.txt');
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return false;
         }
     }

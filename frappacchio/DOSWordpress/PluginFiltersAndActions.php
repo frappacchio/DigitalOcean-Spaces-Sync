@@ -6,7 +6,6 @@ use frappacchio\DOSpaces\Filesystem;
 use frappacchio\DOSpaces\Space;
 use Spatie\ImageOptimizer\OptimizerChainFactory;
 
-
 /**
  * Class PluginFiltersAndActions
  * @package frappacchio\DOSWordpress
@@ -24,8 +23,7 @@ class PluginFiltersAndActions
      */
     public function __construct()
     {
-
-        if(PluginSettings::get('dos_key') && PluginSettings::get('dos_secret') && PluginSettings::get('dos_endpoint')){
+        if (PluginSettings::get('dos_key') && PluginSettings::get('dos_secret') && PluginSettings::get('dos_endpoint')) {
             $this->addActions();
             $this->addFilters();
             $this->fileSystem = $this->getFileSystem();
@@ -80,8 +78,8 @@ class PluginFiltersAndActions
                 'url' => admin_url('admin-ajax.php'),
                 'response' => [
                     'true' => __('Connection established successfully', 'dos'),
-                    'false' => __('There was a problem during connection test', 'dos')
-                ]
+                    'false' => __('There was a problem during connection test', 'dos'),
+                ],
             ));
         }
     }
@@ -102,9 +100,12 @@ class PluginFiltersAndActions
      */
     public function filter_wp_update_attachment_metadata($metadata)
     {
-        foreach ($this->getPaths($metadata) as $filePath) {
-            $this->fileUpload($filePath);
+        if (!empty($metadata['sizes'])) {
+            foreach ($this->getPaths($metadata) as $filePath) {
+                $this->fileUpload($filePath);
+            }
         }
+
         return $metadata;
     }
 
@@ -142,15 +143,15 @@ class PluginFiltersAndActions
      */
     private function fileUpload($filePath)
     {
-        if(file_exists($filePath)){
+        if (file_exists($filePath)) {
             $this->optimizeImage($filePath);
             if ($this->fileSystem->upload($filePath, $this->cleanFilePath($filePath))) {
                 if (PluginSettings::get('dos_storage_file_only')) {
-                    unlink($filePath);
+
                 }
             }
         }
-        
+
     }
 
     /**
@@ -175,7 +176,8 @@ class PluginFiltersAndActions
      */
     private function cleanFilePath($filePath)
     {
-        $basePath = str_replace(PluginSettings::get('upload_path'), '', $filePath);
+        $upload_dir = wp_upload_dir();
+        $basePath = str_replace($upload_dir['basedir'], '', $filePath);
         if (PluginSettings::get('dos_storage_path')) {
             $basePath = PluginSettings::get('dos_storage_path') . DIRECTORY_SEPARATOR . $basePath;
         }
@@ -189,7 +191,7 @@ class PluginFiltersAndActions
      */
     public function action_add_attachment($postID)
     {
-        if (wp_attachment_is_image($postID) == false) {
+        if (wp_attachment_is_image($postID) === false) {
             $this->fileUpload(get_attached_file($postID));
         }
         return true;

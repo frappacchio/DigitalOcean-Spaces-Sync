@@ -12,13 +12,10 @@
 
  */
 
-
-
-
 require_once 'vendor/autoload.php';
 
-define('DOS_PLUGIN_FOLDER',__DIR__);
-define('DOS_PLUGIN_FOLDER_RELATIVE_PATH',dirname(plugin_basename(__FILE__)));
-define('DOS_PLUGIN_URL',plugins_url( '', __FILE__ ));
+define('DOS_PLUGIN_FOLDER', __DIR__);
+define('DOS_PLUGIN_FOLDER_RELATIVE_PATH', dirname(plugin_basename(__FILE__)));
+define('DOS_PLUGIN_URL', plugins_url('', __FILE__));
 
 $plugin = new \frappacchio\DOSWordpress\DOSWordpressPlugin();
