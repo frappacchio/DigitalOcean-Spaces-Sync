@@ -147,7 +147,7 @@ class PluginFiltersAndActions
             $this->optimizeImage($filePath);
             if ($this->fileSystem->upload($filePath, $this->cleanFilePath($filePath))) {
                 if (PluginSettings::get('dos_storage_file_only')) {
-
+                    unlink($filePath);
                 }
             }
         }
